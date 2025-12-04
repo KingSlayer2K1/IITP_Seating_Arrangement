@@ -202,7 +202,6 @@ Open the app:
 
 * Photos are **optional** – system never crashes.
 * Output folders are **auto-created**.
-* Old unused files (`pdf_generator.py`, `helpers.py`) have been removed.
 * Fully Docker-compatible.
 * Designed for deployment on GitHub or servers.
 
