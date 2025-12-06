@@ -1,7 +1,11 @@
-FROM python:3.10-slim
-WORKDIR /app
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
-COPY . /app
-EXPOSE 8501
-CMD ["python3", "seating_arrangement.py"]
+version: '3.9'
+
+services:
+  seating-app:
+    build: .
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./output:/app/output
+      - ./photos:/app/photos
+      - ./input_data_tt.xlsx:/app/input_data_tt.xlsx
