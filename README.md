@@ -106,6 +106,105 @@ Everything is structured cleanly for exam-day handling.
 
 ---
 
+# 🐳 Running with Docker
+
+---
+
+# Running This Project Using Docker (Recommended)
+
+This project is fully containerized. Any user can run it without installing Python, Streamlit, ReportLab, or other dependencies.
+Only Docker Desktop is required.
+
+### 1. Install Docker Desktop
+
+Download and install Docker Desktop from:
+[https://www.docker.com/products/docker-desktop/](https://www.docker.com/products/docker-desktop/)
+
+Ensure Docker is running before proceeding.
+
+### 2. Clone the Repository
+
+```bash
+git clone https://github.com/KingSlayer2K1/IITP_Seating_Arrangement.git
+cd IITP_Seating_Arrangement
+```
+
+### 3. Prepare Input Files
+
+The following are required:
+
+1. Timetable Excel file
+2. Roll–name mapping Excel or CSV
+3. Room capacities Excel
+4. Optional: a `photos/` folder containing student images in the format `ROLL.jpg`
+
+Ensure an empty output directory exists:
+
+```bash
+mkdir output
+```
+
+### 4. Start the Application with Docker Compose
+
+From inside the project folder, run:
+
+```bash
+docker compose up --build
+```
+
+Docker will:
+
+* Build the image
+* Install all dependencies inside the container
+* Start Streamlit on port 8501
+
+When the container starts successfully, the terminal will display:
+
+```
+You can now view your Streamlit app in your browser:
+URL: http://127.0.0.1:8501
+```
+
+### 5. Access the Web Application
+
+Open a browser and navigate to:
+
+```
+http://localhost:8501
+```
+
+From the interface, you can:
+
+* Upload the timetable Excel file
+* Enter the photos directory
+* Select dense or sparse seating mode
+* Generate seating arrangements
+* Download PDFs, Excel sheets, and ZIP archives
+
+All generated files are saved under the `output/DATE/SESSION/` structure.
+
+### 6. Stopping the Container
+
+Press:
+
+```
+Ctrl + C
+```
+
+Then clean up with:
+
+```bash
+docker compose down
+```
+
+### Notes
+
+* The project directory is mounted inside the container, so code changes are reflected immediately without rebuilding.
+* Photos are optional; missing images do not interrupt execution.
+* All outputs are automatically organized in the appropriate folder structure.
+
+---
+
 # ▶️ Running from Python (Backend)
 
 ## Install dependencies
@@ -157,28 +256,6 @@ streamlit run streamlit_app.py
 
 ---
 
-# 🐳 Running with Docker
-
-## 1. Build Docker image
-
-```bash
-docker build -t seating-app .
-```
-
-## 2. Run container
-
-```bash
-docker run -p 8501:8501 \
-  -v "$(pwd)/output":/app/output \
-  -v "$(pwd)/photos":/app/photos \
-  seating-app
-```
-
-Open the app:
-
-👉 **[http://localhost:8501](http://localhost:8501)**
-
----
 
 # 🧠 Internal Pipeline
 
