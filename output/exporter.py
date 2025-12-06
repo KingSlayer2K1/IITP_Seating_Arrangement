@@ -5,6 +5,7 @@ import logging
 from output.excel_writer import write_overall_output, write_seats_left
 from output.room_pdf import generate_room_pdfs
 from output.student_pdf import generate_student_slips_pdf
+from output.attendance_pdf import generate_attendance_pdfs
 from output.zip_builder import build_zip
 
 logger = logging.getLogger(__name__)
@@ -19,22 +20,6 @@ def export_all(
         roll_name_map: dict,
         photos_folder: str = None
 ) -> dict:
-    """
-    Export everything into the folder:
-        output_root / date / session /
-
-    Structure created:
-        output_root/
-         └── {date}/
-               ├── Morning/
-               │     ├── overall.xlsx
-               │     ├── seats_left.xlsx
-               │     ├── room_<room>.pdf
-               │     ├── student_slips.pdf
-               │     └── seating_{date}_{session}.zip
-               └── Evening/
-                     ├── ...
-    """
 
     # --------------------- CREATE FOLDERS ---------------------
     date_folder = os.path.join(output_root, date)
@@ -53,9 +38,9 @@ def export_all(
     results["overall_excel"] = overall_excel
     results["remaining_seats_excel"] = seats_left_excel
 
-    logger.info("Excel outputs written in session folder.")
+    logger.info("Excel outputs written.")
 
-    # --------------------- 2. Build room-wise structure ----------------------
+    # --------------------- 2. Build room-wise map ----------------------
     room_map = {}
     for subject, room_data in allocations.items():
         for room, rolls in room_data.items():
@@ -71,7 +56,20 @@ def export_all(
 
     logger.info(f"Generated {len(room_pdfs)} room PDFs.")
 
-    # --------------------- 4. Student Slips PDF ----------------------
+    # --------------------- 4. Attendance PDFs (NEW) ----------------------
+    attendance_pdfs = generate_attendance_pdfs(
+        session_folder=session_folder,
+        room_map=room_map,
+        roll_name_map=roll_name_map,
+        photos_folder=photos_folder,
+        date=date,
+        session=session
+    )
+    results["attendance_pdfs"] = attendance_pdfs
+
+    logger.info(f"Generated {len(attendance_pdfs)} attendance PDFs.")
+
+    # --------------------- 5. Student Slips PDF ----------------------
     student_slips_pdf = generate_student_slips_pdf(
         session_folder, room_map, roll_name_map, date, session, photos_folder
     )
@@ -79,18 +77,10 @@ def export_all(
 
     logger.info("Student slips PDF generated.")
 
-    # --------------------- 5. ZIP File ----------------------
-    zip_path = build_zip(
-        session_folder,
-        prefix=f"seating_{date}_{session}"
-    )
-
+    # --------------------- 6. ZIP File ----------------------
+    zip_path = build_zip(session_folder, prefix=f"seating_{date}_{session}")
     results["zip"] = zip_path
+
     logger.info(f"ZIP file created: {zip_path}")
 
     return results
-
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    print("Run exporter.export_all(...) from main script.")
