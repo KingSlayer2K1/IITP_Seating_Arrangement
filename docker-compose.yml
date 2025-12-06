@@ -1,11 +1,34 @@
-version: '3.9'
+version: "3.9"
 
 services:
   seating-app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: iitp_seating_app
+
     ports:
       - "8501:8501"
+
     volumes:
+      # Student photos (read-only)
+      - ./photos:/app/photos:ro
+
+      # Output folder for PDFs / Excels / ZIPs
       - ./output:/app/output
-      - ./photos:/app/photos
-      - ./input_data_tt.xlsx:/app/input_data_tt.xlsx
+
+      # Mount entire project (useful during development)
+      - .:/app
+
+    environment:
+      STREAMLIT_SERVER_PORT: 8501
+      STREAMLIT_SERVER_ADDRESS: 0.0.0.0
+      PYTHONUNBUFFERED: 1
+
+    command: >
+      streamlit run streamlit_app.py
+      --server.port=8501
+      --server.address=0.0.0.0
+      --server.enableCORS=false
+
+    restart: unless-stopped
